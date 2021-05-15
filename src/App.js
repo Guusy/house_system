@@ -1,23 +1,40 @@
-import logo from './logo.svg';
+
 import './App.css';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function App() {
+
+  const [todoItems, setTodoItems] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('/api/todo-items')
+        console.log(response.data)
+        setTodoItems(response.data)
+      } catch (error) {
+        console.log('Error fetching todo items', error)
+      }
+    }
+
+    fetchData()
+  }, [])
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <p>House sytem app</p>
+
+
         <p>
-          Edit <code>src/App.js</code> and save to reload.
-          House system v.0.0.0.1
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+          Todo items
+      </p>
+        {todoItems.map(todoItem => <div className='todo-item'>
+          <p>{todoItem.title}</p>
+          <p>Descripcion:{todoItem.description}</p>
+          <p>Categoria: {todoItem.category}</p>
+          <p>Monto: {todoItem.amount} en {todoItem.payment_method}</p>
+          <p>Dia estimado de pago: {todoItem.estimated_date_pay}</p>
+        </div>)}
       </header>
     </div>
   );

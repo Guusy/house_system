@@ -1,18 +1,10 @@
-
-const { Pool } = require('pg');
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
-
-
+const knex = require('knex')
+const knexFile = require('../knexfile')
 class PgClient {
 
-    getPool() {
-        return pool.connect();
-
+    getConnection(){
+        const env = (process.env.NODE_ENV === "production") ? "production" : "development"
+        return knex(knexFile[env])
     }
 }
 module.exports = new PgClient()
