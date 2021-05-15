@@ -1,3 +1,5 @@
 node_modules
 .env
 commands-db.sql
+.DS_Store
+build
