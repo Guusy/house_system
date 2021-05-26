@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
@@ -6,6 +6,7 @@ import CardItem from '../../components/shopping/shoppingList/ShoppingList';
 import AddProduct from '../../components/shopping/addProduct/AddProduct';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
+import ProductsService from '../../services/products/ProductsService';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -25,11 +26,19 @@ const useStyles = makeStyles((theme) => ({
 
 const ShoppingPage = () => {
     const classes = useStyles();
-    const items = [{
-        name: 'Jamon',
-        noMeasureQuantiy: true,
-        quantity: '300grs'
-    }]
+    const [items, setItems] = useState([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await ProductsService.getAll()
+                setItems(response.data)
+            } catch (error) {
+                console.error('Error trying to fetch products', error)
+            }
+        }
+        fetchData()
+    }, [])
     return <div>
         <Paper component="form" className={classes.root}>
 
@@ -42,7 +51,7 @@ const ShoppingPage = () => {
                 <SearchIcon />
             </IconButton>
         </Paper>
-        <CardItem items={items} category='Comida' />
+        <CardItem items={items} category='' />
         <AddProduct />
     </div>
 }

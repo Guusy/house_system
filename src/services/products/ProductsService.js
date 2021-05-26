@@ -1,7 +1,19 @@
+import axios from "axios"
+
 class ProductsService {
 
-    addProduct(product){
-        // TODO: do the api call to the serve
+    getAll() {
+        return axios.get('/api/shopping/items')
+    }
+
+    addProduct(product) {
+        return axios.post('/api/shopping/items', product)
+    }
+
+    addUnit(product) {
+        const newProduct = { ...product }
+        newProduct.quantity = Number.parseInt(product.quantity, 10) + 1
+        return axios.put('/api/shopping/items', newProduct)
     }
 }
 

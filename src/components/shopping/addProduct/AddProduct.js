@@ -51,11 +51,12 @@ export default function FormDialog() {
             await ProductsService.addProduct({
                 name,
                 quantity,
-                category
+                category,
+                measurable: true // TODO: add the logic to check it
             })
             handleClose()
         } catch (error) {
-            console.error('There was a error trying to save the product')
+            console.error('There was a error trying to save the product', error)
         }
     }
 
