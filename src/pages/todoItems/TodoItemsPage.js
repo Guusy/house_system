@@ -65,7 +65,7 @@ const TodoItemsPage = () => {
         <Paper component="form" className={classes.root}>
             <InputBase
                 className={classes.input}
-                placeholder="Busca tu producto"
+                placeholder="Busca tu item"
                 inputProps={{ 'aria-label': 'search google maps' }}
             />
             <IconButton type="submit" className={classes.iconButton} aria-label="search">
