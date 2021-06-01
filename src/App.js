@@ -1,30 +1,35 @@
 
 import './App.css';
 import { useEffect, useState } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import axios from 'axios';
 import CustomDrawer from './components/drawer/CustomDrawer'
 import ShoppingPage from './pages/Shopping/ShoppingPage';
+import TodoItemsPage from './pages/todoItems/TodoItemsPage';
 function App() {
 
-  const [todoItems, setTodoItems] = useState([])
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/api/todo-items')
-        console.log(response.data)
-        setTodoItems(response.data)
-      } catch (error) {
-        console.log('Error fetching todo items', error)
-      }
-    }
 
-    fetchData()
-  }, [])
   return (
-    <CustomDrawer>
+    <Router>
 
-      <ShoppingPage />
-      {/* <div className="App">
+      <CustomDrawer>
+
+        <Switch>
+
+          <Route path="/shopping">
+            <ShoppingPage />
+
+          </Route>
+          <Route path="/">
+            <TodoItemsPage />
+          </Route>
+        </Switch>
+        {/* <div className="App">
         <header className="App-header">
           <p>
             Todo items
@@ -38,7 +43,9 @@ function App() {
           </div>)}
         </header>
       </div> */}
-    </CustomDrawer>
+      </CustomDrawer>
+    </Router>
+
   );
 }
 
