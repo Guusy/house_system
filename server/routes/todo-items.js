@@ -37,8 +37,7 @@ router.post('/tax', async (req, res) => {
     const results = await TaxRepository.create(req.body)
     res.send(results);
   } catch (err) {
-    console.error(err);
-    res.send("Error " + err);
+    return next(err)
   }
 })
 
