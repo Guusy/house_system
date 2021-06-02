@@ -70,7 +70,6 @@ const TaxByIdPage = () => {
     const getCategory = (category) => {
         return category.toLowerCase().replace('_', ' ')
     }
-    console.log(tax)
     return <div>
         {tax ?
             <Card className={classes.root}>
