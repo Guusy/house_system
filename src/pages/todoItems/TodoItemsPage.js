@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import List from '@material-ui/core/List';
@@ -14,6 +14,8 @@ import TodoItemsService from '../../services/todoItems/TodoItemsService';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from "react-router-dom";
 import AddItem from '../../components/todoItems/addItem/AddItem';
+import DateService from '../../services/DateService';
+import TaxService from '../../services/todoItems/tax/TaxService';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,32 +36,45 @@ const TodoItemsPage = () => {
     const history = useHistory();
 
     const classes = useStyles();
-    const [todoItems, setTodoItems] = useState([])
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await TodoItemsService.getAll()
-                console.log(response.data)
-                setTodoItems(response.data)
-            } catch (error) {
-                console.log('Error fetching todo items', error)
-            }
+    const [todoItems, setTodoItems] = useState(null)
+    const fetchData = useCallback(async () => {
+        try {
+            const response = await TodoItemsService.getAll()
+            console.log(response.data)
+            setTodoItems(response.data)
+        } catch (error) {
+            console.log('Error fetching todo items', error)
         }
-
+    }, [])
+    useEffect(() => {
         fetchData()
     }, [])
 
-    const deleteTodoItem = (item) => {
-
+    const deleteTax = async (tax) => {
+        try {
+            await TaxService.delete(tax.id)
+            await fetchData()
+        } catch (error) {
+            console.error('Error trying to delete', error)
+        }
     }
 
-    const finishTodoItem = (item) => {
-
+    const payTax = async (tax) => {
+        try {
+            await TaxService.pay(tax.id)
+            await fetchData();
+        } catch (error) {
+            console.error('Error trying to paid', error)
+        }
     }
 
-    const goToDetailPage = (idItem) => {
-        history.push(`/todo-items/${idItem}`);
+    const goToDetailPage = (type, idItem) => {
+        history.push(`/${type}/${idItem}`);
     }
+
+    const totalTax = todoItems && todoItems.taxes.reduce((acum, tax) => {
+        return acum + tax.amount
+    }, 0)
 
     return <div>
         <Paper component="form" className={classes.root}>
@@ -73,25 +88,29 @@ const TodoItemsPage = () => {
             </IconButton>
         </Paper>
         <List dense>
-            {todoItems ? todoItems.map((item) => {
-                const { id, title, category, amount, payment_method, estimated_date_pay } = item
-                const [date] = estimated_date_pay.split('T')
-                return <ListItem button onClick={() => goToDetailPage(id)}>
-                    <ListItemText
-                        primary={title}
-                        secondary={date}
-                    />
-                    <ListItemSecondaryAction>
-                        <IconButton edge="end" aria-label="done" onClick={() => finishTodoItem(item)}>
-                            <DoneIcon />
-                        </IconButton>
-                        <IconButton edge="end" aria-label="delete" onClick={() => deleteTodoItem(item)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </ListItemSecondaryAction>
+            {todoItems ?
+                <div>
+                    Total a pagar: ${totalTax}
+                    {todoItems.taxes.map((tax) => {
+                        const { id, title, paid, estimated_date_pay } = tax
+                        const secondary = paid ? `Pagado el ${DateService.transformDate(paid)}` : `Vence el ${DateService.transformDate(estimated_date_pay)}`
+                        return <ListItem button onClick={() => goToDetailPage('tax', id)}>
+                            <ListItemText
+                                primary={title}
+                                secondary={secondary}
+                            />
+                            <ListItemSecondaryAction>
+                                <IconButton edge="end" aria-label="done" onClick={() => payTax(tax)}>
+                                    <DoneIcon />
+                                </IconButton>
+                                <IconButton edge="end" aria-label="delete" onClick={() => deleteTax(tax)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
 
-                </ListItem>
-            })
+                        </ListItem>
+                    })}
+                </div>
                 : <CircularProgress />
             }
         </List>

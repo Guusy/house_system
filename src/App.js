@@ -11,6 +11,7 @@ import axios from 'axios';
 import CustomDrawer from './components/drawer/CustomDrawer'
 import ShoppingPage from './pages/Shopping/ShoppingPage';
 import TodoItemsPage from './pages/todoItems/TodoItemsPage';
+import TaxByIdPage from './pages/tax/TaxByIdPage';
 function App() {
 
 
@@ -25,9 +26,14 @@ function App() {
             <ShoppingPage />
 
           </Route>
+          <Route path="/tax/:id" >
+            <TaxByIdPage />
+          </Route>
           <Route path="/">
             <TodoItemsPage />
           </Route>
+         
+
         </Switch>
         {/* <div className="App">
         <header className="App-header">
